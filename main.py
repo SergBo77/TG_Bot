@@ -45,9 +45,6 @@ async def weather(message: Message):
 
         await message.answer(weather_info)
 
-        # Удаляем обработчик, чтобы он не срабатывал на следующие сообщения
-        dp.message.handlers.pop()
-
 @dp.message(CommandStart())
 async def start(message: Message):
     await message.answer("Приветики, я бот!")
@@ -59,21 +56,21 @@ async def aitext(message: Message):
 
 @dp.message(F.photo)
 async def react_photo(message: Message):
-    list = ['Ого, какая фотка!', 'Непонятно, что это такое', 'Не отправляй мне такое больше!']
-    rand_answ = random.choice(list)
+    list_1 = ['Ого, какая фотка!', 'Непонятно, что это такое', 'Не отправляй мне такое больше!']
+    rand_answ = random.choice(list_1)
     await message.answer(rand_answ)
 
 @dp.message(Command('photo'))
 async def photo(message: Message):
-    list = ['https://sotni.ru/wp-content/uploads/2023/08/korotko-o-pogode-4.webp',
+    list_2 = ['https://sotni.ru/wp-content/uploads/2023/08/korotko-o-pogode-4.webp',
             'https://sotni.ru/wp-content/uploads/2023/08/anekdoty-pro-kholodnoe-leto-3.webp',
             'https://sotni.ru/wp-content/uploads/2023/08/dozhd-karikatura-4.webp']
-    rand_photo = random.choice(list)
+    rand_photo = random.choice(list_2)
     await message.answer_photo(photo=rand_photo, caption='Это супер крутая картинка')
 
 @dp.message(Command('help'))
 async def help(message: Message):
-    await message.answer("Этот бот умеет выполнять команды:\n/start\n/help")
+    await message.answer("Этот бот умеет выполнять команды:\n/start\n/help\n/photo\n/weather")
 
 async def main():
     await dp.start_polling(bot)
