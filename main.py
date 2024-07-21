@@ -5,13 +5,13 @@ from aiogram.types import Message
 import random
 import requests
 
-from config import TOKEN
+from config import TOKEN, API_WEATHER_KEY
 
 bot = Bot(token=TOKEN)
 dp = Dispatcher()
 
 def get_weather(city):
-    api_key = "bca1c0489a6a8bebf9a512c7411aa5c7"
+    api_key = API_WEATHER_KEY
     url = f"https://api.openweathermap.org/data/2.5/weather?q={city}&appid={api_key}&units=metric"
     response = requests.get(url)
     return response.json()
