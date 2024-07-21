@@ -1,14 +1,19 @@
 import asyncio
 from aiogram import Bot, Dispatcher, F, types
 from aiogram.filters import CommandStart, Command
-from aiogram.types import Message
+from aiogram.types import Message, FSInputFile
 import random
 import requests
+
+from gtts import gTTS
+import os
+from translate import Translator
 
 from config import TOKEN, API_WEATHER_KEY
 
 bot = Bot(token=TOKEN)
 dp = Dispatcher()
+translator = Translator(from_lang="ru", to_lang="en")
 
 def get_weather(city):
     api_key = API_WEATHER_KEY
@@ -59,6 +64,7 @@ async def react_photo(message: Message):
     list_1 = ['Ого, какая фотка!', 'Непонятно, что это такое', 'Не отправляй мне такое больше!']
     rand_answ = random.choice(list_1)
     await message.answer(rand_answ)
+    await bot.download(message.photo[-1], destination=f'img/{message.photo[-1].file_id}.jpg')
 
 @dp.message(Command('photo'))
 async def photo(message: Message):
@@ -71,6 +77,29 @@ async def photo(message: Message):
 @dp.message(Command('help'))
 async def help(message: Message):
     await message.answer("Этот бот умеет выполнять команды:\n/start\n/help\n/photo\n/weather")
+
+@dp.message(Command('voice'))
+async def voice(message: Message):
+    voice = 'Привет, проверяющему домашнюю работу!'
+    tts = gTTS(text=voice, lang='ru')
+    tts.save("voice_1.ogg")
+    audio = FSInputFile("voice_1.ogg")
+    await bot.send_voice(chat_id=message.chat.id, voice=audio)
+    os.remove("voice_1.ogg")
+
+@dp.message()
+async def translate_message(message: Message):
+    # Проверяем наличие текста в сообщении
+    if message.text:
+        try:
+            # Переводим сообщение на английский
+            translated = translator.translate(message.text)
+            # Отправляем переведенное сообщение обратно в чат
+            await message.answer(translated)
+        except Exception as e:
+            await message.answer(f"Произошла ошибка при переводе: {str(e)}")
+    else:
+        await message.answer("Нет текста для перевода.")
 
 async def main():
     await dp.start_polling(bot)
